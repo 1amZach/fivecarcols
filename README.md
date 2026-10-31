@@ -6,6 +6,8 @@ Every `carcols.meta` gives its sirens, lights and modkits a number, and the game
 
 The fix is giving one of them a free number and updating every place that points at it. By hand that means opening every `carcols.meta` and `carvariations.meta` you have, every time you add a pack. fivecarcols does it from the server console, shows you every change first, and keeps a backup.
 
+![Scanning for clashes](docs/scan.png)
+
 ## What it reads
 
 Every resource the server knows about, wherever it is, including `[category]` folders and resources outside `resources/`. In each one it reads every `carcols.meta` and `carvariations.meta` in any subfolder, as well as renamed ones like `police_carcols.meta`. `node_modules`, `.git` and `backups` folders are skipped.
@@ -51,6 +53,8 @@ carcols fix            every change a fix would make, writes nothing
 carcols fix confirm    write it
 carcols undo           put the last fix back
 ```
+
+![The preview of a fix](docs/fix.png)
 
 The preview lists each id that moves with its old and new number, and every `carvariations.meta` line that changes with it. Nothing is written until you confirm, and if any file changed since the preview it shows you the new one first. The files it changes are backed up to `backups/` before anything is touched.
 
