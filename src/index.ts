@@ -154,7 +154,6 @@ const line = (e: Plan['moves'][number]['refs'][number]) => e.file.text.slice(0, 
 
 function restartNote(names: string[], ids = 'new') {
     say(`carcols: restart the server to load the ${ids} ids. Changed: ${names.join(', ')}`);
-    say(`  Restarting only those resources also works, but players already connected keep the old ids until they rejoin.`);
 }
 
 async function run(args: string[]) {

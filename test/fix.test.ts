@@ -38,9 +38,9 @@ test('light clash', async () => {
         'b/carvariations.meta': carvariations([vehicle('b', { light: 31, siren: 31 })]),
     });
     const p = await planFor(s.resources);
-    assert.deepEqual(moves(p), ['light b 31->255']);
+    assert.deepEqual(moves(p), ['light b 31->254']);
     const cv = [...render(p)].find(([f]) => f.path === 'carvariations.meta')![1];
-    assert.match(cv, /<lightSettings value="255" \/>/);
+    assert.match(cv, /<lightSettings value="254" \/>/);
     assert.match(cv, /<sirenSettings value="31" \/>/); // the siren number isn't a light
 });
 
@@ -64,14 +64,14 @@ test('kit clash renames the kitName and every carvariations line using it, in an
         '[other]/extra/carvariations.meta': carvariations([vehicle('c', { kits: ['500_PACK_B_MODKIT', '500_pack_a_modkit'] })]),
     });
     const p = await planFor(s.resources);
-    assert.deepEqual(moves(p), ['kit pack_b 500->65535']);
-    assert.equal(p.moves[0]!.name, '65535_pack_b_modkit');
+    assert.deepEqual(moves(p), ['kit pack_b 500->65534']);
+    assert.equal(p.moves[0]!.name, '65534_pack_b_modkit');
     const out = new Map([...render(p)].map(([f, t]) => [`${f.resource}/${f.path}`, t]));
     assert.deepEqual([...out.keys()].sort(), ['extra/carvariations.meta', 'pack_b/stream/carcols.meta', 'pack_b/stream/carvariations.meta']);
-    assert.match(out.get('pack_b/stream/carcols.meta')!, /<kitName>65535_pack_b_modkit<\/kitName>\s*<id value="65535" \/>/);
-    assert.match(out.get('pack_b/stream/carvariations.meta')!, /<Item>65535_pack_b_modkit<\/Item>/);
+    assert.match(out.get('pack_b/stream/carcols.meta')!, /<kitName>65534_pack_b_modkit<\/kitName>\s*<id value="65534" \/>/);
+    assert.match(out.get('pack_b/stream/carvariations.meta')!, /<Item>65534_pack_b_modkit<\/Item>/);
     const extra = out.get('extra/carvariations.meta')!;
-    assert.match(extra, /<Item>65535_PACK_B_MODKIT<\/Item>/);
+    assert.match(extra, /<Item>65534_PACK_B_MODKIT<\/Item>/);
     assert.match(extra, /<Item>500_pack_a_modkit<\/Item>/);
 });
 
@@ -83,7 +83,7 @@ test('the same kit in more than one place is one kit, not a clash', async () => 
     });
     const p = await planFor(s.resources);
     assert.equal(p.clashes[0]!.claims.length, 2);
-    assert.deepEqual(moves(p), ['kit c 700->65535']);
+    assert.deepEqual(moves(p), ['kit c 700->65534']);
 
     const t = server({
         'b/carcols.meta': carcols({ kits: [kit(700, '700_shared')] }),
@@ -103,27 +103,27 @@ test('a kitName without a number in front keeps its name', async () => {
         'b/carvariations.meta': carvariations([vehicle('b', { kits: ['second'] })]),
     });
     const p = await planFor(s.resources);
-    assert.deepEqual(moves(p), ['kit b 9->65535']);
+    assert.deepEqual(moves(p), ['kit b 9->65534']);
     assert.equal(p.moves[0]!.name, undefined);
     assert.equal(p.moves[0]!.refs.length, 0);
 });
 
 test('a new kitName that already exists stays unchanged and says so', async () => {
     const s = server({
-        'a/carcols.meta': carcols({ kits: [kit(9, '9_x'), kit(1, '65535_x')] }),
+        'a/carcols.meta': carcols({ kits: [kit(9, '9_x'), kit(1, '65534_x')] }),
         'b/carcols.meta': carcols({ kits: [kit(9, '9_x2')] }),
         'c/carcols.meta': carcols({ kits: [kit(9, '9_x')] }),
     });
     const p = await planFor(s.resources, { max: { siren: 254, light: 255, kit: 65535 } });
-    assert.deepEqual(moves(p), ['kit b 9->65535']);
-    assert.equal(p.moves[0]!.name, '65535_x2');
+    assert.deepEqual(moves(p), ['kit b 9->65534']);
+    assert.equal(p.moves[0]!.name, '65534_x2');
     const s2 = server({
-        'a/carcols.meta': carcols({ kits: [kit(9, '9_x'), kit(1, '65535_y')] }),
+        'a/carcols.meta': carcols({ kits: [kit(9, '9_x'), kit(1, '65534_y')] }),
         'b/carcols.meta': carcols({ kits: [kit(9, '9_y')] }),
     });
     const p2 = await planFor(s2.resources);
     assert.equal(p2.moves[0]!.name, undefined);
-    assert.match(p2.warnings[0]!, /65535_y is taken/);
+    assert.match(p2.warnings[0]!, /65534_y is taken/);
 });
 
 test('siren references in other resources follow the closest folder, or are left alone with a warning', async () => {
@@ -165,18 +165,18 @@ test('only the numbers change: CRLF, BOM, tabs and comments stay byte for byte',
         'b/carvariations.meta': Buffer.from(bv, 'utf8'),
     });
     const p = await planFor(s.resources);
-    assert.deepEqual(moves(p).sort(), ['kit b 64->65535', 'siren b 8->254']);
+    assert.deepEqual(moves(p).sort(), ['kit b 64->65534', 'siren b 8->254']);
     const f = await load(s.resources);
     const fv = f.find((x) => x.resource === 'b' && x.path === 'carvariations.meta')!;
     apply(join(s.dir, 'backups'), writesOf(p), []);
 
     const expect = Buffer.from(
-        b.replace('<id value="8" />', '<id value="254" />').replace('<kitName>64_b_kit', '<kitName>65535_b_kit').replace('<id value="64" />\r\n      <kitType>', '<id value="65535" />\r\n      <kitType>'),
+        b.replace('<id value="8" />', '<id value="254" />').replace('<kitName>64_b_kit', '<kitName>65534_b_kit').replace('<id value="64" />\r\n      <kitType>', '<id value="65534" />\r\n      <kitType>'),
         'utf8',
     );
     assert.deepEqual(s.read('b/carcols.meta'), expect);
     assert.match(s.read('b/carcols.meta').toString('utf8'), /<!-- <id value="64" \/> keep me -->/);
-    assert.deepEqual(s.read('b/carvariations.meta'), Buffer.from(bv.replace('value="8"', 'value="254"').replace('<Item>64_b_kit', '<Item>65535_b_kit'), 'utf8'));
+    assert.deepEqual(s.read('b/carvariations.meta'), Buffer.from(bv.replace('value="8"', 'value="254"').replace('<Item>64_b_kit', '<Item>65534_b_kit'), 'utf8'));
     assert.deepEqual(s.read('a/carcols.meta'), Buffer.from(a));
     assert.ok(fv.text.startsWith('\xEF\xBB\xBF'));
 });
@@ -259,7 +259,7 @@ test('pools turned off are reported but not fixed', async () => {
     });
     const p = await planFor(s.resources, { pools: ['light', 'kit'] });
     assert.equal(p.clashes.length, 2);
-    assert.deepEqual(moves(p), ['light b 5->255']);
+    assert.deepEqual(moves(p), ['light b 5->254']);
 });
 
 test('ignored resources keep their ids and are never written', async () => {
@@ -270,7 +270,7 @@ test('ignored resources keep their ids and are never written', async () => {
         '[locked]/zz/carvariations.meta': carvariations([vehicle('z', { kits: ['40_a'] })]),
     });
     const p = await planFor(s.resources, {}, ignores(['zz']));
-    assert.deepEqual(moves(p), ['kit a 40->65535']);
+    assert.deepEqual(moves(p), ['kit a 40->65534']);
     assert.ok([...render(p).keys()].every((f) => f.resource !== 'zz'));
     assert.match(p.warnings[0]!, /zz\/carvariations\.meta:\d+ uses kit 40_a but is ignored/);
 
@@ -292,7 +292,7 @@ test('after a fix a new scan finds nothing', async () => {
     apply(join(s.dir, 'backups'), writesOf(p), []);
     const again = await planFor(s.resources);
     assert.equal(again.clashes.length, 0);
-    assert.match(s.text('b/carvariations.meta'), /<Item>65535_b<\/Item>/);
+    assert.match(s.text('b/carvariations.meta'), /<Item>65534_b<\/Item>/);
 });
 
 test('undo puts every file back exactly', async () => {

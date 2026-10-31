@@ -113,6 +113,8 @@ export function plan(files: MetaFile[], opts: Options): Plan {
         const max = opts.max[pool];
         const used = new Set<number>([0, ...opts.reserved[pool]]);
         if (pool === 'siren' && max > 254) used.add(255); // SSLA keeps 255 for itself
+        // the top of a pool often means "none" to the game, so new ids never take it
+        if (pool !== 'siren') used.add(max);
         for (const id of byId.keys()) used.add(id);
         for (const f of files) for (const r of f.parsed.refs) if (r.pool === pool && !Number.isNaN(r.id)) used.add(r.id);
         const free = () => {

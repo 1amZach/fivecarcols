@@ -23,11 +23,11 @@ When more than one resource uses the same id:
 
 - Resources in `ignore` keep theirs.
 - Otherwise the resource whose name comes first alphabetically keeps it, then the file path, then the order in the file. The same server always gets the same result.
-- Every other one gets a new id, picked from the top of the range down. Base game sirens, lights and kits sit at the bottom, so this stays out of their way. A new id is never one that's already defined, used by any `carvariations.meta`, or in `reserved`.
+- Every other one gets a new id, picked from the top of the range down. Base game sirens, lights and kits sit at the bottom, so this stays out of their way. The very top light and modkit numbers (255 and 65535) often mean "none" to the game, so they're never handed out. A new id is never one that's already defined, used by any `carvariations.meta`, or in `reserved`.
 
 A siren or light id used twice inside the same resource counts as one, so it moves together. Two modkits with the same `kitName` are the same kit shipped twice, not a clash, and move together too.
 
-When a modkit moves, its `kitName` number changes with it (`512_mypack_modkit` becomes `65535_mypack_modkit`), and so does every `carvariations.meta` that uses that kit, in any resource. A `kitName` with no number in front keeps its name.
+When a modkit moves, its `kitName` number changes with it (`512_mypack_modkit` becomes `65534_mypack_modkit`), and so does every `carvariations.meta` that uses that kit, in any resource. A `kitName` with no number in front keeps its name.
 
 `sirenSettings` and `lightSettings` are just numbers, so for those it works out which entry a car means: the one in its own resource, or if its resource doesn't define that id, the one closest to it in the folder tree, like a sirens resource in the same `[police]` folder. When it can't tell, the line is left as it is and the preview says so, for you to check.
 
@@ -54,11 +54,11 @@ carcols undo           put the last fix back
 
 The preview lists each id that moves with its old and new number, and every `carvariations.meta` line that changes with it. Nothing is written until you confirm, and if any file changed since the preview it shows you the new one first. The files it changes are backed up to `backups/` before anything is touched.
 
-After a fix, restart the server. The ids are read when a resource starts, and players already connected keep the old ones until they rejoin, so restarting just the changed resources (the confirm lists them) only helps players who join after.
+After a fix, restart the server so everyone gets the new ids. The confirm lists the resources that changed.
 
 `undo` puts every file back as it was before the fix, byte for byte. A file you changed after the fix is left alone and named. If the server crashed in the middle of a fix, it says so on the next start, and `undo` cleans it up.
 
-`scan` also points out ids above the limit. With [SSLA](https://www.lcpdfr.com/downloads/dev-resources/fivem/50047-fivem-sirensetting-limit-adjuster/) installed, siren ids go up to 65534. Set `sirenMax` to match, or new siren ids will only come from 1 to 254.
+`scan` also points out ids above the limit. With the siren limit adjuster (SSLA) installed, siren ids go up to 65534. Set `sirenMax` to match, or new siren ids will only come from 1 to 254.
 
 ## Config
 
