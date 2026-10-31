@@ -1,0 +1,7 @@
+{
+    "pools": { "sirens": true, "lights": true, "kits": true },
+    "sirenMax": 254,
+    "ignore": [],
+    "reserved": { "sirens": [], "lights": [], "kits": [] },
+    "backups": 10
+}

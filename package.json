@@ -1,0 +1,20 @@
+{
+  "name": "fivecarcols",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Finds and fixes siren, light and modkit id clashes between vehicle packs",
+  "author": "IamZach",
+  "license": "MIT",
+  "homepage": "https://discord.gg/agn",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "tsx --test --test-force-exit test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
